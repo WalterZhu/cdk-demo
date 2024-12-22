@@ -35,7 +35,9 @@ export class pipelineStage extends cdk.Stage {
     */
 
     // lambda api stack
-    const lambda_api_stack = new lambdaApiStack(this, 'LambdaApiStack');
+    const lambda_api_stack = new lambdaApiStack(this, 'LambdaApiStack', {
+      env: { account: '320324805378', region: 'us-east-1' }
+    });
     cdk.Tags.of(lambda_api_stack).add('environment', props.devEnv);
 
     /*
