@@ -1,7 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave } from 'aws-cdk-lib/pipelines';
-import { pipelineStage } from './stage-pipeline-stack';
+import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 export interface MainStackProps extends cdk.StackProps {
