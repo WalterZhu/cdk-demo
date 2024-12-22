@@ -6,13 +6,9 @@ import { lambdaApiStack } from './stack-lambda-api';
 //import { asyncLambdaStack } from './stack-async-lambda';
 //import { rdsAuroraStack } from './stack-datastore';
 
-export interface pipelineStageProps extends cdk.StageProps {
-  readonly devEnv: string;
-}
-
 export class pipelineStage extends cdk.Stage {
 
-  constructor(scope: Construct, id: string, props: pipelineStageProps) {
+  constructor(scope: Construct, id: string, props: cdk.StageProps) {
 
     super(scope, id, props);
 
@@ -35,10 +31,8 @@ export class pipelineStage extends cdk.Stage {
     */
 
     // lambda api stack
-    const lambda_api_stack = new lambdaApiStack(this, 'LambdaApiStack', {
-      env: { account: '320324805378', region: 'us-east-1' }
-    });
-    cdk.Tags.of(lambda_api_stack).add('environment', props.devEnv);
+    const lambda_api_stack = new lambdaApiStack(this, 'LambdaApiStack');
+    cdk.Tags.of(lambda_api_stack).add('environment', 'dev');
 
     /*
     // lambda async stack

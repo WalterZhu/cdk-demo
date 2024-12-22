@@ -9,7 +9,6 @@ export interface MainStackProps extends cdk.StackProps {
   readonly githubRepo: string;
   readonly githubBranch: string;
   readonly connArn: string;
-  readonly devEnv: string;
 }
 
 export class mainStack extends cdk.Stack {
@@ -42,12 +41,12 @@ export class mainStack extends cdk.Stack {
     });
 
     // add a stage to the pipeline
-    const devStage = pipeline.addStage(new pipelineStage(this, `${props.devEnv}`, { 
-      devEnv: props.devEnv
+    const deployStage = pipeline.addStage(new pipelineStage(this, `deploy`, { 
+      env: { account: '320324805378', region: 'us-east-1' }
     }));
     
     // add a manual approval step
-    devStage.addPost(new ManualApprovalStep('approval'));
+    deployStage.addPost(new ManualApprovalStep('approval'));
 
     /*
     // add waves to the pipeline
