@@ -27,7 +27,6 @@ export class mainStack extends cdk.Stack {
         commands: [
           'npm ci',
           'npm run build',
-          'npx cdk bootstrap',
           'npx cdk synth'
         ]
       }),
