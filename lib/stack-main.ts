@@ -42,9 +42,7 @@ export class mainStack extends cdk.Stack {
     });
 
     // add a stage to the pipeline
-    const deployStage = pipeline.addStage(new pipelineStage(this, `deploy`, { 
-      env: { account: '320324805378', region: 'us-east-1' }
-    }));
+    const deployStage = pipeline.addStage(new pipelineStage(this, `dev`));
     
     // add a manual approval step
     deployStage.addPost(new ManualApprovalStep('approval'));
