@@ -18,5 +18,3 @@ const main_stack = new mainStack(app, 'main-stack', {
     connArn,
 });
 cdk.Tags.of(main_stack).add('environment', devEnv);
-
-app.synth();

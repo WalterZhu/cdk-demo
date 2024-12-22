@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from "constructs";
-import { vpcStack } from './stack-vpc';
+//import { vpcStack } from './stack-vpc';
 import { lambdaApiStack } from './stack-lambda-api';
-import { ecsFargateStack } from './stack-ecs-fargate';
-import { asyncLambdaStack } from './stack-async-lambda';
-import { rdsAuroraStack } from './stack-datastore';
+//import { ecsFargateStack } from './stack-ecs-fargate';
+//import { asyncLambdaStack } from './stack-async-lambda';
+//import { rdsAuroraStack } from './stack-datastore';
 
 export interface pipelineStageProps extends cdk.StageProps {
   readonly devEnv: string;
