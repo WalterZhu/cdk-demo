@@ -8,7 +8,7 @@ import { lambdaApiStack } from './stack-lambda-api';
 
 export class pipelineStage extends cdk.Stage {
 
-  constructor(scope: Construct, id: string, props: cdk.StageProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StageProps) {
 
     super(scope, id, props);
 
