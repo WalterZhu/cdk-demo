@@ -4,19 +4,17 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { mainStack } from '../lib/stack-main';
 
 const app           = new cdk.App();
-const env           = { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 const githubOrg     = process.env.GITHUB_ORG      || StringParameter.valueForStringParameter(app, '/cdk-demo/github/org');
 const githubRepo    = process.env.GITHUB_REPO     || StringParameter.valueForStringParameter(app, '/cdk-demo/github/repo');
 const githubBranch  = process.env.GITHUB_BRANCH   || StringParameter.valueForStringParameter(app, '/cdk-demo/github/branch');
 const connArn       = process.env.CONN_ARN        || StringParameter.valueForStringParameter(app, '/cdk-demo/github/conn-arn'); 
 
 const main_stack = new mainStack(app, 'main-stack', {
-  env,
   githubOrg,
   githubRepo,
   githubBranch,
   connArn,
 });
-cdk.Tags.of(main_stack).add('environment', 'dev');
+cdk.Tags.of(main_stack).add('environment', 'test');
 
 app.synth();
