@@ -1,16 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave } from 'aws-cdk-lib/pipelines';
-import { StackProps } from 'aws-cdk-lib';
-import { pipelineAppStage } from './pipeline';
+import { pipelineStage } from './stage-pipeline-stack';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
-export interface MainStackProps extends StackProps {
-    readonly githubOrg: string;
-    readonly githubRepo: string;
-    readonly githubBranch: string;
-    readonly connArn: string;
-    readonly devEnv: string;
+export interface MainStackProps extends cdk.StackProps {
+  readonly githubOrg: string;
+  readonly githubRepo: string;
+  readonly githubBranch: string;
+  readonly connArn: string;
+  readonly devEnv: string;
 }
 
 export class mainStack extends cdk.Stack {
@@ -43,20 +42,23 @@ export class mainStack extends cdk.Stack {
     });
 
     // add a stage to the pipeline
-    const devStage = pipeline.addStage(new pipelineAppStage(this, `${props.devEnv}`, { 
-      env: { account: '123456789012', region: 'us-east-1' }
+    const devStage = pipeline.addStage(new pipelineStage(this, `${props.devEnv}`, { 
+      devEnv: props.devEnv
     }));
+    
     // add a manual approval step
     devStage.addPost(new ManualApprovalStep('approval'));
 
+    /*
     // add waves to the pipeline
     const devWave = pipeline.addWave(`${props.devEnv}-Wave`);
-    devWave.addStage(new pipelineAppStage(this, `${props.devEnv}-Primary`, {
+    devWave.addStage(new pipelineStage(this, `${props.devEnv}-Primary`, {
       env: { account: '123456789012', region: 'us-east-1' }
     }));
-    devWave.addStage(new pipelineAppStage(this, `${props.devEnv}-Secondary`, {
+    devWave.addStage(new pipelineStage(this, `${props.devEnv}-Secondary`, {
       env: { account: '123456789012', region: 'us-west-2' }
     }));
+    */
 
   }
 }
