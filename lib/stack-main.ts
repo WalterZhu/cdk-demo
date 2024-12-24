@@ -5,32 +5,15 @@ import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
-interface PipelineConfig {
-  githubOrg: string;
-  githubRepo: string;
-  githubBranch: string;
-  connArn: string;
-}
-
 export class MainStack extends cdk.Stack {
-
-  private getConfig(scope: Construct): PipelineConfig {
-    return {
-      githubOrg: process.env.GITHUB_ORG || 
-        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/org'),
-      githubRepo: process.env.GITHUB_REPO || 
-        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/repo'),
-      githubBranch: process.env.GITHUB_BRANCH || 
-        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/branch'),
-      connArn: process.env.CONN_ARN || 
-        StringParameter.valueForStringParameter(scope, '/cdk-demo/conn-arn'),
-    };
-  }
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const config = this.getConfig(this);
+    const githubOrg = StringParameter.valueForStringParameter(this, '/cdk-demo/github/org');
+    const githubRepo = StringParameter.valueForStringParameter(this, '/cdk-demo/github/repo');
+    const githubBranch = StringParameter.valueForStringParameter(this, '/cdk-demo/github/branch');
+    const connArn = StringParameter.valueForStringParameter(this, '/cdk-demo/github/conn-arn');
 
     // create a pipeline
     const pipeline = new CodePipeline(this, 'main', {
@@ -39,9 +22,11 @@ export class MainStack extends cdk.Stack {
       reuseCrossRegionSupportStacks: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.connection(
-          `${config.githubOrg}/${config.githubRepo}`, 
-          config.githubBranch,
-          { connectionArn: `${config.connArn}` }
+          `${githubOrg}/${githubRepo}`, 
+          githubBranch,
+          {
+            connectionArn: connArn
+          }
         ),
         commands: [
           'npm ci',
@@ -49,6 +34,7 @@ export class MainStack extends cdk.Stack {
           'npx cdk synth'
         ]
       }),
+
       synthCodeBuildDefaults: {
         rolePolicy: [
           new PolicyStatement({
@@ -60,9 +46,9 @@ export class MainStack extends cdk.Stack {
     });
 
     // add waves to the pipeline
-    const testWave = pipeline.addWave(`Test-Wave`);
-    testWave.addPre(new ManualApprovalStep('approval'));
-    testWave.addStage(new pipelineStage(this, `Test-stage`));
+    const testWave = pipeline.addWave(`TestWave`);
+    testWave.addPre(new ManualApprovalStep('ApprovalStep'));
+    testWave.addStage(new pipelineStage(this, `TestStage`));
   }
 
 }
