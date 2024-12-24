@@ -16,13 +16,13 @@ export class MainStack extends cdk.Stack {
 
   private getConfig(scope: Construct): PipelineConfig {
     return {
-      githubOrg: process.env.GITHUB_ORG ?? 
+      githubOrg: process.env.GITHUB_ORG || 
         StringParameter.valueForStringParameter(scope, '/cdk-demo/github/org'),
-      githubRepo: process.env.GITHUB_REPO ?? 
+      githubRepo: process.env.GITHUB_REPO || 
         StringParameter.valueForStringParameter(scope, '/cdk-demo/github/repo'),
-      githubBranch: process.env.GITHUB_BRANCH ?? 
+      githubBranch: process.env.GITHUB_BRANCH || 
         StringParameter.valueForStringParameter(scope, '/cdk-demo/github/branch'),
-      connArn: process.env.CONN_ARN ?? 
+      connArn: process.env.CONN_ARN || 
         StringParameter.valueForStringParameter(scope, '/cdk-demo/conn-arn'),
     };
   }
