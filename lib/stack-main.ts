@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave } from 'aws-cdk-lib/pipelines';
+import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep } from 'aws-cdk-lib/pipelines';
 import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
@@ -40,14 +40,16 @@ export class MainStack extends cdk.Stack {
     });
 
     // create wave of dev stage 
-    const devWave = new Wave('DevWave');
-    devWave.addStage(new pipelineStage(this, `DevStage`, {
-      env: { account: '320324805378', region: 'us-east-2' },
-    }));
-    pipeline.addWave('DevWave', devWave);
+    const devWave = pipeline.addWave('DevWave');
+    const devStage = new pipelineStage(this, `DevStage`);
+    cdk.Tags.of(devStage).add('environment', 'dev');
+    devWave.addStage(devStage);
+
 
     // create wave of test stage 
     const testWave = pipeline.addWave(`TestWave`);
+    const testStage = new pipelineStage(this, `TestStage`);
+    cdk.Tags.of(testStage).add('environment', 'test');
     testWave.addPre(new ManualApprovalStep('ApprovalStep'));
     testWave.addStage(new pipelineStage(this, `TestStage`));
   }
