@@ -51,7 +51,8 @@ export class MainStack extends cdk.Stack {
     const testStage = new pipelineStage(this, `TestStage`);
     cdk.Tags.of(testStage).add('environment', 'test');
     testWave.addPre(new ManualApprovalStep('ApprovalStep'));
-    testWave.addStage(new pipelineStage(this, `TestStage`));
+    testWave.addStage(testStage);
+    
   }
 
 }
