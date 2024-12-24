@@ -3,17 +3,11 @@ import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave } from 'aws-cdk-lib/pipelines';
 import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 export class MainStack extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-
-    const githubOrg = StringParameter.valueForStringParameter(this, '/cdk-demo/github/org')       || 'aws';
-    const githubRepo = StringParameter.valueForStringParameter(this, '/cdk-demo/github/repo')     || 'aws-cdk';
-    const githubBranch = StringParameter.valueForStringParameter(this, '/cdk-demo/github/branch') || 'main';
-    const connArn = StringParameter.valueForStringParameter(this, '/cdk-demo/github/conn-arn')    || '';
 
     // create a pipeline
     const pipeline = new CodePipeline(this, 'main', {
@@ -22,10 +16,10 @@ export class MainStack extends cdk.Stack {
       reuseCrossRegionSupportStacks: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.connection(
-          `${githubOrg}/${githubRepo}`, 
-          githubBranch,
+          'WalterZhu/cdk-demo', 
+          'main',
           {
-            connectionArn: connArn
+            connectionArn: 'arn:aws:codeconnections:us-east-1:320324805378:connection/0dbfba8c-4dd2-448a-9cd0-d36922e3dcb1'
           }
         ),
         commands: [
