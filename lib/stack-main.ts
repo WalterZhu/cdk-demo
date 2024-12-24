@@ -39,7 +39,14 @@ export class MainStack extends cdk.Stack {
       }
     });
 
-    // add waves to the pipeline
+    // create wave of dev stage 
+    const devWave = new Wave('DevWave');
+    devWave.addStage(new pipelineStage(this, `DevStage`, {
+      env: { account: '320324805378', region: 'us-east-2' },
+    }));
+    pipeline.addWave('DevWave', devWave);
+
+    // create wave of test stage 
     const testWave = pipeline.addWave(`TestWave`);
     testWave.addPre(new ManualApprovalStep('ApprovalStep'));
     testWave.addStage(new pipelineStage(this, `TestStage`));
