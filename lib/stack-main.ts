@@ -46,12 +46,11 @@ export class mainStack extends cdk.Stack {
     // add a manual approval step
     deployStage.addPost(new ManualApprovalStep('approval'));
 
-    /*
     // add waves to the pipeline
-    const devWave = pipeline.addWave(`${props.devEnv}-Wave`);
-    devWave.addStage(new pipelineStage(this, `${props.devEnv}-Primary`, {
-      env: { account: '123456789012', region: 'us-east-1' }
-    }));
+    const testWave = pipeline.addWave(`Test-Wave`);
+    testWave.addStage(new pipelineStage(this, `Test-stage`));
+
+    /*
     devWave.addStage(new pipelineStage(this, `${props.devEnv}-Secondary`, {
       env: { account: '123456789012', region: 'us-west-2' }
     }));
