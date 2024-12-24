@@ -10,10 +10,10 @@ export class MainStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const githubOrg = StringParameter.valueForStringParameter(this, '/cdk-demo/github/org');
-    const githubRepo = StringParameter.valueForStringParameter(this, '/cdk-demo/github/repo');
-    const githubBranch = StringParameter.valueForStringParameter(this, '/cdk-demo/github/branch');
-    const connArn = StringParameter.valueForStringParameter(this, '/cdk-demo/github/conn-arn');
+    const githubOrg = StringParameter.valueForStringParameter(this, '/cdk-demo/github/org')       || 'aws';
+    const githubRepo = StringParameter.valueForStringParameter(this, '/cdk-demo/github/repo')     || 'aws-cdk';
+    const githubBranch = StringParameter.valueForStringParameter(this, '/cdk-demo/github/branch') || 'main';
+    const connArn = StringParameter.valueForStringParameter(this, '/cdk-demo/github/conn-arn')    || '';
 
     // create a pipeline
     const pipeline = new CodePipeline(this, 'main', {
