@@ -16,7 +16,7 @@ export class mainStack extends cdk.Stack {
     super(scope, id, props);
 
     // create a pipeline
-    const pipeline = new CodePipeline(this, 'pipeline', {
+    const pipeline = new CodePipeline(this, 'main', {
       selfMutation:     true,
       crossAccountKeys: true,
       reuseCrossRegionSupportStacks: true,
@@ -40,18 +40,13 @@ export class mainStack extends cdk.Stack {
       }
     });
 
-    // add a stage to the pipeline
-    const deployStage = pipeline.addStage(new pipelineStage(this, `dev`));
-    
-    // add a manual approval step
-    deployStage.addPost(new ManualApprovalStep('approval'));
-
     // add waves to the pipeline
     const testWave = pipeline.addWave(`Test-Wave`);
+    testWave.addPre(new ManualApprovalStep('approval'));
     testWave.addStage(new pipelineStage(this, `Test-stage`));
 
     /*
-    devWave.addStage(new pipelineStage(this, `${props.devEnv}-Secondary`, {
+    testWave.addStage(new pipelineStage(this, `Deploy-stage`, {
       env: { account: '123456789012', region: 'us-west-2' }
     }));
     */
