@@ -4,15 +4,13 @@ import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave }
 import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
-export interface MainStackProps extends cdk.StackProps {
-  readonly githubOrg: string;
-  readonly githubRepo: string;
-  readonly githubBranch: string;
-  readonly connArn: string;
-}
+const githubOrg     = process.env.GITHUB_ORG          || 'WalterZhu' 
+const githubRepo    = process.env.GITHUB_REPO         || 'cdk-demo'; 
+const githubBranch  = process.env.GITHUB_BRANCH       || 'main'; 
+const connArn       = process.env.CONN_ARN            || 'arn:aws:codeconnections:us-east-1:320324805378:connection/0dbfba8c-4dd2-448a-9cd0-d36922e3dcb1'; 
 
 export class mainStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: MainStackProps) {
+  constructor(scope: Construct, id: string, props: cdk.StackProps) {
     super(scope, id, props);
 
     // create a pipeline
@@ -21,9 +19,11 @@ export class mainStack extends cdk.Stack {
       crossAccountKeys: true,
       reuseCrossRegionSupportStacks: true,
       synth: new ShellStep('Synth', {
-        input: CodePipelineSource.connection(`${props.githubOrg}/${props.githubRepo}`, `${props.githubBranch}`,{
-          connectionArn: `${props.connArn}`
-        }),
+        input: CodePipelineSource.connection(
+          `${githubOrg}/${githubRepo}`, 
+          githubBranch,
+          { connectionArn: connArn }
+        ),
         commands: [
           'npm ci',
           'npm run build',
@@ -44,12 +44,5 @@ export class mainStack extends cdk.Stack {
     const testWave = pipeline.addWave(`Test-Wave`);
     testWave.addPre(new ManualApprovalStep('approval'));
     testWave.addStage(new pipelineStage(this, `Test-stage`));
-
-    /*
-    testWave.addStage(new pipelineStage(this, `Deploy-stage`, {
-      env: { account: '123456789012', region: 'us-west-2' }
-    }));
-    */
-
   }
 }
