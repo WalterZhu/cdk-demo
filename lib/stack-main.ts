@@ -3,15 +3,34 @@ import { Construct } from 'constructs';
 import { CodePipeline, CodePipelineSource, ManualApprovalStep, ShellStep, Wave } from 'aws-cdk-lib/pipelines';
 import { pipelineStage } from './stage-pipeline';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm'
 
-const githubOrg     = process.env.GITHUB_ORG          || 'WalterZhu' 
-const githubRepo    = process.env.GITHUB_REPO         || 'cdk-demo'; 
-const githubBranch  = process.env.GITHUB_BRANCH       || 'main'; 
-const connArn       = process.env.CONN_ARN            || 'arn:aws:codeconnections:us-east-1:320324805378:connection/0dbfba8c-4dd2-448a-9cd0-d36922e3dcb1'; 
+interface PipelineConfig {
+  githubOrg: string;
+  githubRepo: string;
+  githubBranch: string;
+  connArn: string;
+}
 
-export class mainStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props: cdk.StackProps) {
+export class MainStack extends cdk.Stack {
+
+  private getConfig(scope: Construct): PipelineConfig {
+    return {
+      githubOrg: process.env.GITHUB_ORG ?? 
+        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/org'),
+      githubRepo: process.env.GITHUB_REPO ?? 
+        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/repo'),
+      githubBranch: process.env.GITHUB_BRANCH ?? 
+        StringParameter.valueForStringParameter(scope, '/cdk-demo/github/branch'),
+      connArn: process.env.CONN_ARN ?? 
+        StringParameter.valueForStringParameter(scope, '/cdk-demo/conn-arn'),
+    };
+  }
+
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    const config = this.getConfig(this);
 
     // create a pipeline
     const pipeline = new CodePipeline(this, 'main', {
@@ -20,9 +39,9 @@ export class mainStack extends cdk.Stack {
       reuseCrossRegionSupportStacks: true,
       synth: new ShellStep('Synth', {
         input: CodePipelineSource.connection(
-          `${githubOrg}/${githubRepo}`, 
-          githubBranch,
-          { connectionArn: connArn }
+          `${config.githubOrg}/${config.githubRepo}`, 
+          config.githubBranch,
+          { connectionArn: `${config.connArn}` }
         ),
         commands: [
           'npm ci',
@@ -45,4 +64,5 @@ export class mainStack extends cdk.Stack {
     testWave.addPre(new ManualApprovalStep('approval'));
     testWave.addStage(new pipelineStage(this, `Test-stage`));
   }
+
 }
